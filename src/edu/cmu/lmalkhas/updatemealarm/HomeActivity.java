@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import android.view.*;
+import android.view.View;
 import android.view.View.OnClickListener;
 
 import android.os.Bundle;
@@ -20,15 +20,18 @@ import android.widget.Toast;
 
 public class HomeActivity extends Activity {
 
-	static public AlarmBrain alarmBrain = new AlarmBrain();
+	static public AlarmBrain alarmBrain;
 	List<Map<String, String>> alarmList = new ArrayList<Map<String, String>>();
 	private SimpleAdapter simpleAdpt;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 
+		//instantiate alarmBrain
+		alarmBrain = new AlarmBrain(getApplicationContext());
+		
 		// add title for alarms
 		TextView tv = (TextView) findViewById(R.id.alarmsTitle);
 		tv.setText("Alarms set:");
@@ -89,6 +92,7 @@ public class HomeActivity extends Activity {
 			alarmList.add(createAlarm("alarm", latestAlarm));
 			alarmBrain.clearLatest();
 		}
+		
 	}
 
 	private HashMap<String, String> createAlarm(String key, String value) {
@@ -103,6 +107,8 @@ public class HomeActivity extends Activity {
 			Intent intent = new Intent(HomeActivity.this,
 					AddAlarmActivity.class);
 			startActivity(intent);
+			
+			
 		}
 	};
 
