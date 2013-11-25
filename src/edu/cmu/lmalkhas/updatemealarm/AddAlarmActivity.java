@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -27,13 +26,6 @@ public class AddAlarmActivity extends Activity {
 		setButtonListeners();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.add_alarm, menu);
-		return true;
-	}
-
 	private void setButtonListeners() {
 
 		// add text to add new alarms button
@@ -45,9 +37,10 @@ public class AddAlarmActivity extends Activity {
 		cancelButton.setOnClickListener(cancelButtonListener);
 	}
 
-	OnClickListener cancelButtonListener = new OnClickListener() {
+	private OnClickListener cancelButtonListener = new OnClickListener() {
 		@Override
 		public void onClick(View arg0) {
+			// cancel this activity... user does not want to set up an alarm
 			finish();
 		}
 	};
@@ -55,7 +48,8 @@ public class AddAlarmActivity extends Activity {
 	OnClickListener addButtonListener = new OnClickListener() {
 		@Override
 		public void onClick(View arg0) {
-						
+
+			// get time from the time picker
 			TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker1);
 			timePicker.clearFocus();
 			int alarm_hour = timePicker.getCurrentHour();
@@ -64,9 +58,11 @@ public class AddAlarmActivity extends Activity {
 			String minuteString = Integer.toString(alarm_min);
 			if (minuteString.length() == 1)
 				minuteString = "0" + minuteString;
-			
-			if(HomeActivity.alarmBrain.find(hourString+":"+minuteString)) return;
 
+			// if an alarm has already been set for that time, don't recreate it
+			// return
+			if (HomeActivity.alarmBrain.find(hourString + ":" + minuteString))
+				return;
 
 			// add alarm to alarm brain
 			HomeActivity.alarmBrain.addAlarm(hourString + ":" + minuteString);
@@ -91,7 +87,8 @@ public class AddAlarmActivity extends Activity {
 			if (alarm_hour < curr_hour
 					|| (alarm_hour == curr_hour && alarm_min <= curr_min)) {
 				// change time for alarm to go off TOMORROW
-				System.out.println("setting alarm to tomorrow because of hour");
+				System.out
+						.println("setting alarm to tomorrow because time has passed today");
 				alarmTime.add(Calendar.DAY_OF_MONTH, 1);
 			}
 			// set hour, min, second

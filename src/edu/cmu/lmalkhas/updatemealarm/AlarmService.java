@@ -10,21 +10,20 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 public class AlarmService extends Service {
-	
+
 	private MediaPlayer mp;
-	
+
 	@Override
 	public void onCreate() {
-		//ALARM IS GOING OFF.
+		// ALARM IS GOING OFF.
 		Toast.makeText(this, "MyAlarmService.onCreate()", Toast.LENGTH_LONG)
 				.show();
 		mp = MediaPlayer.create(this, R.raw.alarm);
-		//mp.start();
-		
-		//TODO: delete the alarm from persistent store
-		//TODO: delete alarm from Alarm Brain and display
-		
-		
+		// mp.start();
+
+		// TODO: delete the alarm from persistent store
+		// TODO: delete alarm from Alarm Brain and display
+
 	}
 
 	@Override
@@ -42,17 +41,16 @@ public class AlarmService extends Service {
 	}
 
 	@Override
-	
-	 public void onStart(Intent intent, int startId) {
-	
-	 // TODO Auto-generated method stub
-	
-	 super.onStart(intent, startId);
-	
-	 Toast.makeText(this, "MyAlarmService.onStart()",
-	 Toast.LENGTH_LONG).show();
-	
-	 }
+	public void onStart(Intent intent, int startId) {
+
+		// TODO Auto-generated method stub
+
+		super.onStart(intent, startId);
+
+		Toast.makeText(this, "MyAlarmService.onStart()", Toast.LENGTH_LONG)
+				.show();
+
+	}
 
 	@Override
 	public boolean onUnbind(Intent intent) {

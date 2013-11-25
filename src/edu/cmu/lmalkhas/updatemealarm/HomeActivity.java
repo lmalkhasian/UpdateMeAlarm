@@ -4,11 +4,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.model.GraphUser;
+
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.widget.AdapterView;
@@ -23,15 +33,20 @@ public class HomeActivity extends Activity {
 	static public AlarmBrain alarmBrain;
 	List<Map<String, String>> alarmList = new ArrayList<Map<String, String>>();
 	private SimpleAdapter simpleAdpt;
-	
+	private GraphUser user;
+
+	// constants
+	public static final String PREFS_NAME = "AlarmTimes";
+	//private static final String ALARM_SET_KEY = "alarmStringsKey";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 
-		//instantiate alarmBrain
+		// instantiate alarmBrain, persistence manager
 		alarmBrain = new AlarmBrain(getApplicationContext());
-		
+
 		// add title for alarms
 		TextView tv = (TextView) findViewById(R.id.alarmsTitle);
 		tv.setText("Alarms set:");
@@ -41,6 +56,18 @@ public class HomeActivity extends Activity {
 		b.setText("Add new alarm");
 		b.setOnClickListener(addAlarmButtonListener);
 
+		Button b2 = (Button) findViewById(R.id.settingsButton);
+		b2.setText("Settings");
+		b2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+				startActivity(intent);
+			}
+			
+		});
+		
 		setupList();
 
 	}
@@ -48,7 +75,7 @@ public class HomeActivity extends Activity {
 	void setupList() {
 		// populate the list view of alarms
 		ListView lv = (ListView) findViewById(R.id.alarmList);
-		populateList();
+		initialPopulateList();
 		simpleAdpt = new SimpleAdapter(this, alarmList,
 				android.R.layout.simple_list_item_1, new String[] { "alarm" },
 				new int[] { android.R.id.text1 });
@@ -79,20 +106,19 @@ public class HomeActivity extends Activity {
 		});
 	}
 
-	void populateList() {
-		List<String> alarmBrainList = alarmBrain.getAlarmList();
+	void initialPopulateList() {
+		Set<String> alarmBrainList = alarmBrain.getAlarmList();
 		for (String time : alarmBrainList) {
 			alarmList.add(createAlarm("alarm", time));
 		}
 	}
-	
+
 	void updateAlarmList() {
 		String latestAlarm = alarmBrain.getLastAddedAlarm();
-		if(latestAlarm != null) {
+		if (latestAlarm != null) {
 			alarmList.add(createAlarm("alarm", latestAlarm));
 			alarmBrain.clearLatest();
 		}
-		
 	}
 
 	private HashMap<String, String> createAlarm(String key, String value) {
@@ -107,8 +133,7 @@ public class HomeActivity extends Activity {
 			Intent intent = new Intent(HomeActivity.this,
 					AddAlarmActivity.class);
 			startActivity(intent);
-			
-			
+
 		}
 	};
 
@@ -118,12 +143,20 @@ public class HomeActivity extends Activity {
 		getMenuInflater().inflate(R.menu.home, menu);
 		return true;
 	}
-	
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// respond to menu item selection
+		Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+		startActivity(intent);
+		return true;
+	}
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Toast.makeText(HomeActivity.this, "RESUMING!",
-				Toast.LENGTH_SHORT).show();
+		Toast.makeText(HomeActivity.this, "RESUMING!", Toast.LENGTH_SHORT)
+				.show();
 		updateAlarmList();
 		simpleAdpt.notifyDataSetChanged();
 	}

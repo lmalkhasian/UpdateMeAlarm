@@ -1,36 +1,34 @@
 package edu.cmu.lmalkhas.updatemealarm;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 public class AlarmBrain {
 
 	// TODO HAVE A SORTED LIST.
-	List<String> alarms = new ArrayList<String>();
+	Set<String> alarms = new HashSet<String>();
 	String latestAlarm = null;
-	
-	public static final String PREFS_NAME = "AlarmTimes";
-	private static final String ALARM_SET_KEY = "alarmStringsKey";
-	
-	private SharedPreferences mPrefs;
+
+	// public static final String PREFS_NAME = "AlarmTimes";
+	// private static final String ALARM_SET_KEY = "alarmStringsKey";
+	// private SharedPreferences mPrefs;
 
 	// TODO PERSISTENT STORE OF ALARMS.
 
 	// the default constructor.
 	public AlarmBrain(Context context) {
 		// get the alarms from memory?
-		  	mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-
-		  	mPrefs.getStringSet(ALARM_SET_KEY, null);
+		// mPrefs = context.getSharedPreferences(PREFS_NAME,
+		// Context.MODE_PRIVATE);
+		//
+		// mPrefs.getStringSet(ALARM_SET_KEY, null);
 
 	}
 
 	// returns the alarm list currently valid
-	public List<String> getAlarmList() {
+	public Set<String> getAlarmList() {
 		return alarms;
 	}
 
@@ -44,25 +42,19 @@ public class AlarmBrain {
 
 	// returns true if successful, false otherwise
 	public boolean addAlarm(String time) {
-		
-		if(find(time)) return false;
-		
-		//add to alarm list
+
+		if (find(time))
+			return false;
+
+		// add to alarm list
 		alarms.add(time);
-		
-		//add to persistent store
-		Set<String> alarmStrings = mPrefs.getStringSet(ALARM_SET_KEY, null);
-		if(alarmStrings != null) {
-			
-		}
-	    SharedPreferences.Editor editor = mPrefs.edit();
-	    editor.putString("alarmTimes", time);
-	    editor.commit();		
-		
-		//make this the latest added alarm
+
+		// make this the latest added alarm
 		latestAlarm = time;
-		
-		
+
+		// add to persistent storage
+		// PersistenceManager.addTime(time);
+
 		printAlarms();
 		return true;
 	}
@@ -70,7 +62,7 @@ public class AlarmBrain {
 	boolean find(String targetTime) {
 		return alarms.contains(targetTime);
 	}
-	
+
 	void printAlarms() {
 		for (String t : alarms) {
 			Log.d("debug", t);

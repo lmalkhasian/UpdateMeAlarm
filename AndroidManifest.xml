@@ -6,7 +6,8 @@
 
     <uses-sdk
         android:minSdkVersion="11"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="10" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -27,7 +28,7 @@
             android:label="@string/title_activity_add_alarm" >
         </activity>
         <activity
-            android:name=".AndroidAlarmService"
+            android:name="edu.cmu.lmalkhas.updatemealarm.AndroidAlarmService"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,7 +36,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".AlarmService" />
+
+        <service android:name="edu.cmu.lmalkhas.updatemealarm.AlarmService" />
+
+        <activity
+            android:name="edu.cmu.lmalkhas.updatemealarm.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <meta-data android:value="@string/app_id" android:name="com.facebook.sdk.ApplicationId"/>
+        <activity android:label="@string/app_name" android:name="com.facebook.LoginActivity"></activity>
     </application>
 
 </manifest>
