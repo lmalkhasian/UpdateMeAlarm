@@ -8,5 +8,7 @@
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="app_id">200465996805994</string>
     <string name="title_activity_alarm">Alarm</string>
+    <string name="title_activity_news">NewsActivity</string>
+    <string name="title_activity_news2">News2Activity</string>
 
 </resources>
