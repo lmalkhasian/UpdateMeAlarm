@@ -1,5 +1,6 @@
 package edu.cmu.lmalkhas.updatemealarm;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import com.facebook.*;
@@ -21,64 +22,25 @@ import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-public class SettingsActivity extends Activity implements
-		TextToSpeech.OnInitListener {
+public class SettingsActivity extends Activity{
 
-	TextToSpeech TTS;
+	private GraphUser user;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
 
-		//TTS = new TextToSpeech(this, this);
-
-		System.out.println("before session call");
-	    // start Facebook Login
-	    Session.openActiveSession(this, true, new Session.StatusCallback() {
-
-	      // callback when session changes state
-	      @Override
-	      public void call(Session session, SessionState state, Exception exception) {
-	        if (session.isOpened()) {
-
-	          // make request to the /me API
-	          Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
-
-	            // callback after Graph API response with user object
-	            @Override
-	            public void onCompleted(GraphUser user, Response response) {
-	              if (user != null) {
-	                System.out.println("000 User = " + user.getName());
-	              }
-	              else {
-	            	  System.out.println("000 User is null");
-	              }
-	            }
-	          });
-	        }
-	        else {
-	        	System.out.println("000 Session is not open!");
-	        }
-	      }
-	      
-	      
-	    });
-	    
 		setupUI();
 		// textToSpeech();
-		
+
 	}
 
-	  @Override
-	  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-	      super.onActivityResult(requestCode, resultCode, data);
-	      Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
-	  }
-
-	private void preachIt() {
-		// TTS.speak("Hello govna, how are you today mate.",
-		// TextToSpeech.QUEUE_FLUSH, null);
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		Session.getActiveSession().onActivityResult(this, requestCode,
+				resultCode, data);
 	}
 
 	private void setupUI() {
@@ -100,23 +62,69 @@ public class SettingsActivity extends Activity implements
 		newsCheckbox.setOnCheckedChangeListener(newsCheckChanged);
 
 		// setup Facebook login button
-		/*LoginButton loginButton = (LoginButton) findViewById(R.id.loginButton);
-		loginButton
-				.setUserInfoChangedCallback(new LoginButton.UserInfoChangedCallback() {
-					@Override
-					public void onUserInfoFetched(GraphUser user) {
-						SettingsActivity.this.user = user;
-						// updateUI();
-						// It's possible that we were waiting for this.user to
-						// be populated in order to post a
-						// status update.
-						// handlePendingAction();
-					}
-				});*/
+
+		LoginButton loginB = (LoginButton) findViewById(R.id.loginButton);
+		loginB.setPublishPermissions(Arrays.asList("manage_notifications"));
+		loginB.setUserInfoChangedCallback(new LoginButton.UserInfoChangedCallback() {
+
+			@Override
+			public void onUserInfoFetched(GraphUser user) {
+				SettingsActivity.this.user = user;
+				if (user != null) {
+					System.out.println("got user!" + user.getId());
+					// System.out.println("got notifications!" +
+					// user.getNotifications());
+					doStuff(Session.getActiveSession());
+				} else {
+					System.out.println("user == null");
+				}
+			}
+		});
 
 		Button saveButton = (Button) findViewById(R.id.saveButton);
 		saveButton.setText("Done");
 		saveButton.setOnClickListener(saveButtonListener);
+	}
+
+	void doStuff(Session fbSession) {
+		System.out.println("in do stuff!");
+		if(fbSession == null) {
+			return;
+		}
+		System.out.println("fb session is NOT null");
+		Request notificationsRequest = Request.newGraphPathRequest(fbSession,
+				"me/notifications", new Request.Callback() {
+
+					@Override
+					public void onCompleted(Response response) {
+						
+						System.out.println("Notification response completed");
+						
+						GraphObject object = response.getGraphObject();
+						String notifications;
+						if (object != null) {
+							notifications = object.getProperty("data")
+									.toString();
+						} else {
+							notifications = "Notifications returns null";
+						}
+					}
+				});
+
+		Bundle params = new Bundle();
+		params.putString("include_read", "true");
+
+		notificationsRequest.setParameters(params);
+		Request.executeBatchAsync(notificationsRequest);
+	}
+
+	private void onSessionStateChange(Session session, SessionState state,
+			Exception exception) {
+		if (state.isOpened()) {
+			System.out.println("state is open!");
+		} else if (state.isClosed()) {
+			System.out.println("state is closed!");
+		}
 	}
 
 	private OnCheckedChangeListener fbCheckChanged = new OnCheckedChangeListener() {
@@ -200,21 +208,5 @@ public class SettingsActivity extends Activity implements
 			finish();
 		}
 	};
-
-	@Override
-	public void onInit(int initStatus) {
-
-		if (initStatus == TextToSpeech.SUCCESS) {
-			TTS.setLanguage(Locale.ENGLISH);
-		} else {
-			Intent installTTSIntent = new Intent();
-			installTTSIntent
-					.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-			startActivity(installTTSIntent);
-		}
-
-		preachIt();
-
-	}
 
 }

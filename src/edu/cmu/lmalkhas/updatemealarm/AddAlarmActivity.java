@@ -72,6 +72,17 @@ public class AddAlarmActivity extends Activity {
 					AlarmService.class);
 			pendingIntent = PendingIntent.getService(AddAlarmActivity.this, 0,
 					myIntent, 0);
+			
+			
+			AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(System.currentTimeMillis());
+			calendar.add(Calendar.SECOND, 10);
+			alarmManager.set(AlarmManager.RTC_WAKEUP,
+					calendar.getTimeInMillis(), pendingIntent);
+			
+			
+/*
 			AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
 			// get current time
@@ -104,7 +115,7 @@ public class AddAlarmActivity extends Activity {
 			System.out.println("SET ALARM FOR ALARM TIME = "
 					+ alarmTime.get(Calendar.HOUR_OF_DAY) + " "
 					+ alarmTime.get(Calendar.MINUTE));
-
+*/
 			finish();
 		}
 	};
