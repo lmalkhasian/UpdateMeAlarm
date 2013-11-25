@@ -1,8 +1,6 @@
 package edu.cmu.lmalkhas.updatemealarm;
 
 import java.util.Calendar;
-import java.util.Date;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -12,7 +10,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 public class AddAlarmActivity extends Activity {
 
@@ -22,7 +19,6 @@ public class AddAlarmActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_alarm);
-
 		setButtonListeners();
 	}
 

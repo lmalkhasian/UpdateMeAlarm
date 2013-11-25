@@ -5,20 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.model.GraphUser;
-
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.widget.AdapterView;
@@ -33,7 +24,6 @@ public class HomeActivity extends Activity {
 	static public AlarmBrain alarmBrain;
 	List<Map<String, String>> alarmList = new ArrayList<Map<String, String>>();
 	private SimpleAdapter simpleAdpt;
-	private GraphUser user;
 
 	// constants
 	public static final String PREFS_NAME = "AlarmTimes";

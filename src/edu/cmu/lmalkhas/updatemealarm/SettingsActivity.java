@@ -1,7 +1,6 @@
 package edu.cmu.lmalkhas.updatemealarm;
 
 import java.util.Arrays;
-import java.util.Locale;
 
 import com.facebook.*;
 import com.facebook.model.*;
@@ -12,7 +11,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -24,7 +22,6 @@ import android.widget.TextView;
 
 public class SettingsActivity extends Activity{
 
-	private GraphUser user;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,14 +66,13 @@ public class SettingsActivity extends Activity{
 
 			@Override
 			public void onUserInfoFetched(GraphUser user) {
-				SettingsActivity.this.user = user;
+				//SettingsActivity.this.user = user;
 				if (user != null) {
-					System.out.println("got user!" + user.getId());
+					System.out.println("settings got user!" + user.getId());
 					// System.out.println("got notifications!" +
 					// user.getNotifications());
-					doStuff(Session.getActiveSession());
 				} else {
-					System.out.println("user == null");
+					System.out.println("settings user == null");
 				}
 			}
 		});
@@ -86,37 +82,37 @@ public class SettingsActivity extends Activity{
 		saveButton.setOnClickListener(saveButtonListener);
 	}
 
-	void doStuff(Session fbSession) {
-		System.out.println("in do stuff!");
-		if(fbSession == null) {
-			return;
-		}
-		System.out.println("fb session is NOT null");
-		Request notificationsRequest = Request.newGraphPathRequest(fbSession,
-				"me/notifications", new Request.Callback() {
-
-					@Override
-					public void onCompleted(Response response) {
-						
-						System.out.println("Notification response completed");
-						
-						GraphObject object = response.getGraphObject();
-						String notifications;
-						if (object != null) {
-							notifications = object.getProperty("data")
-									.toString();
-						} else {
-							notifications = "Notifications returns null";
-						}
-					}
-				});
-
-		Bundle params = new Bundle();
-		params.putString("include_read", "true");
-
-		notificationsRequest.setParameters(params);
-		Request.executeBatchAsync(notificationsRequest);
-	}
+//	void doStuff(Session fbSession) {
+//		System.out.println("in do stuff!");
+//		if(fbSession == null) {
+//			return;
+//		}
+//		System.out.println("fb session is NOT null");
+//		Request notificationsRequest = Request.newGraphPathRequest(fbSession,
+//				"me/notifications", new Request.Callback() {
+//
+//					@Override
+//					public void onCompleted(Response response) {
+//						
+//						System.out.println("Notification response completed");
+//						
+//						GraphObject object = response.getGraphObject();
+//						String notifications;
+//						if (object != null) {
+//							notifications = object.getProperty("data")
+//									.toString();
+//						} else {
+//							notifications = "Notifications returns null";
+//						}
+//					}
+//				});
+//
+//		Bundle params = new Bundle();
+//		params.putString("include_read", "true");
+//
+//		notificationsRequest.setParameters(params);
+//		Request.executeBatchAsync(notificationsRequest);
+//	}
 
 	private void onSessionStateChange(Session session, SessionState state,
 			Exception exception) {
