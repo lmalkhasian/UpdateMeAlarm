@@ -119,7 +119,7 @@ public class AddAlarmActivity extends Activity {
 			alarmManager.set(AlarmManager.RTC_WAKEUP,
 					alarmTime.getTimeInMillis(), pendingIntent);
 			Toast.makeText(AddAlarmActivity.this,
-					"Alarm set check log for time", Toast.LENGTH_LONG).show();
+					"Alarm set for " + hourString + ":" + minuteString, Toast.LENGTH_LONG).show();
 			System.out.println("SET ALARM FOR ALARM TIME = "
 					+ alarmTime.get(Calendar.HOUR_OF_DAY) + " "
 					+ alarmTime.get(Calendar.MINUTE));

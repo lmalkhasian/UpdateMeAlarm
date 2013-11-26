@@ -32,7 +32,6 @@ public class NewsManager extends Manager {
 	 */
 	protected String processResponse(String response) {
 		try {
-			System.out.println(response);
 			JSONObject jsonObj = new JSONObject(response);
 			JSONArray jsonArray = jsonObj.getJSONArray("results");
 

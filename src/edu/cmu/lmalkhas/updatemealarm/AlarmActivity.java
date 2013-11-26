@@ -18,6 +18,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.speech.tts.TextToSpeech;
@@ -45,20 +46,28 @@ public class AlarmActivity extends Activity implements
 	private boolean weatherSuccess = false;
 	private boolean alreadyRead = false;
 
+	ProgressDialog progress;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_alarm);
 
+		//play lion king song until notifications are ready.
 		mp = MediaPlayer.create(this, R.raw.lionking);
 		mp.start();
 
+		progress = new ProgressDialog(this);
+		progress.setTitle("Loading");
+		progress.setMessage("Wait while loading...");
+		progress.show();
+
 		TTS = new TextToSpeech(this, this);
 
-		// remove alarm from brain & persistent store
+		//remove alarm from brain & persistent store
 		if (HomeActivity.alarmBrain == null)
 			HomeActivity.alarmBrain = new AlarmBrain();
-		HomeActivity.alarmBrain.shallowRemoveCurrentTime();
+		HomeActivity.alarmBrain.removeTime();
 
 		// if facebook is set to on, get facebook notifications
 		if (PersistenceManager.getSetting(PersistenceManager.FB_ALARM)) {
@@ -258,7 +267,10 @@ public class AlarmActivity extends Activity implements
 		if (!alreadyRead && ttsSuccess && fbNotifSuccess && newsSuccess
 				&& weatherSuccess) {
 			alreadyRead = true;
-			mp.stop();
+			if (mp != null)
+				mp.stop();
+			if (progress != null)
+				progress.dismiss();
 			ringTheAlarm();
 		}
 	}
@@ -305,7 +317,6 @@ public class AlarmActivity extends Activity implements
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								TTS.stop();
-								TTS.shutdown();
 								finish();
 							}
 						});

@@ -83,7 +83,7 @@ public class HomeActivity extends Activity {
 			public boolean onItemLongClick(AdapterView<?> parentAdapter,
 					View view, int position, long id) {
 
-				Toast.makeText(HomeActivity.this, "list item long clicked",
+				Toast.makeText(HomeActivity.this, "Alarm deleted",
 						Toast.LENGTH_SHORT).show();
 				TextView clickedView = (TextView) view;
 				String time = clickedView.getText().toString();

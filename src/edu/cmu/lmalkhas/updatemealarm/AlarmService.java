@@ -3,7 +3,6 @@ package edu.cmu.lmalkhas.updatemealarm;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.widget.Toast;
 
 /**
  * The class that is called when the alarm is triggered by the alarm manager
@@ -24,6 +23,7 @@ public class AlarmService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		stopSelf();
 	}
 
 	/**
@@ -34,8 +34,6 @@ public class AlarmService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
-		Toast.makeText(this, "MyAlarmService.onStart()", Toast.LENGTH_LONG)
-				.show();
 		Intent i = new Intent(App.context, AlarmActivity.class);
 		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(i);
