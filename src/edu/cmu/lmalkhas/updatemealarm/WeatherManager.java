@@ -5,9 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import android.app.Activity;
-import android.os.Bundle;
-
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -18,50 +15,43 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class News2Activity extends Activity {
-
-	// can make "sections" configurable @ some point.
+public class WeatherManager {
 
 	final String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 	String URL = "http://api.wunderground.com/api/04fbf19ce6e52ebe/forecast/astronomy/q/autoip.json";
-	String result = "";
+	
+	WeatherManager() {
+		// TODO: add preferences here.
 
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_news2);
+	}
 
-		new Thread(new Runnable() {
-			public void run() {
-				callWebService();
-			}
-		}).start();
+	public String getWeatherSummary() {
+		return callWebServiceAndProcess();
+	}
 
-	} // end onCreate()
+	private String callWebServiceAndProcess() {
 
-	public void callWebService() {
+		String result = "";
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpGet request = new HttpGet(URL);
 		ResponseHandler<String> handler = new BasicResponseHandler();
 		try {
-			result = httpclient.execute(request, handler);
-			System.out.println(result);
-			processResult();
+			String response = httpclient.execute(request, handler);
+			result = processResponse(response);
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		httpclient.getConnectionManager().shutdown();
+		return result;
 	}
 
 	// end callWebService()
 
-	void processResult() {
+	private String processResponse(String response) {
 		try {
-			JSONObject jsonObj = new JSONObject(result);
-			
+			JSONObject jsonObj = new JSONObject(response);
 			
 			String weatherSummary = "Here is your weather summary for today. ";
 
@@ -82,8 +72,6 @@ public class News2Activity extends Activity {
 				}
 			}
 			
-			
-			
 			// get sunrise/sunset
 			JSONObject jsonSunPhase = jsonObj.getJSONObject("sun_phase");
 			JSONObject jsonSunRise = jsonSunPhase.getJSONObject("sunrise");
@@ -95,9 +83,12 @@ public class News2Activity extends Activity {
 					+ jsonSunSet.getString("hour") + " "
 					+ jsonSunSet.getString("minute") + ". ";
 
-			System.out.println(weatherSummary + sunSummary);
+			return weatherSummary + sunSummary;
 		} catch (JSONException e) {
 			e.printStackTrace();
+			return "";
 		}
+
 	}
+	
 }

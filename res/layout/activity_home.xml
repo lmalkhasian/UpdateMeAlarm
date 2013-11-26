@@ -20,11 +20,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
-        <Button 
-            android:id="@+id/settingsButton"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-            />
     </TableRow>
 
     <TextView
@@ -39,9 +34,26 @@
         android:layout_height="0dip"
         android:layout_weight="0.26" />
 
-    <Button
-        android:id="@+id/addButton"
+    <TableRow
+        android:id="@+id/tableRowLast"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:padding="5dip" >
+
+        <Button
+            android:id="@+id/addButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/settingsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        
+        <Button
+            android:id="@+id/newsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
 
 </LinearLayout>

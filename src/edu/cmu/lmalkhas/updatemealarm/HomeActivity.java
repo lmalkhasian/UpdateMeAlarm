@@ -52,7 +52,18 @@ public class HomeActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				//Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+				Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+				startActivity(intent);
+			}
+			
+		});
+		
+		Button b3 = (Button) findViewById(R.id.newsButton);
+		b3.setText("News");
+		b3.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
 				Intent intent = new Intent(HomeActivity.this, News2Activity.class);
 				startActivity(intent);
 			}

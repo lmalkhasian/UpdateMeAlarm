@@ -3,6 +3,7 @@ package edu.cmu.lmalkhas.updatemealarm;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -20,9 +21,6 @@ public class AlarmService extends Service {
 	public void onCreate() {
 		Toast.makeText(this, "MyAlarmService.onCreate()", Toast.LENGTH_LONG)
 				.show();
-		Intent intent = new Intent(App.context, AlarmActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(intent);
 	}
 
 	@Override
@@ -45,6 +43,10 @@ public class AlarmService extends Service {
 		super.onStart(intent, startId);
 		Toast.makeText(this, "MyAlarmService.onStart()", Toast.LENGTH_LONG)
 				.show();
+		
+		Intent i = new Intent(App.context, AlarmActivity.class);
+		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(i);
 	}
 
 	@Override

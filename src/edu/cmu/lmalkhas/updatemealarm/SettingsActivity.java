@@ -41,8 +41,8 @@ public class SettingsActivity extends Activity{
 	}
 
 	private void setupUI() {
-		TextView tv1 = (TextView) findViewById(R.id.settingsTitle);
-		tv1.setText("Settings\n");
+		//TextView tv1 = (TextView) findViewById(R.id.settingsTitle);
+		//tv1.setText("Settings\n");
 
 		TextView tv2 = (TextView) findViewById(R.id.alarmSoundTitle);
 		tv2.setText("What would you like to wake up to?");
