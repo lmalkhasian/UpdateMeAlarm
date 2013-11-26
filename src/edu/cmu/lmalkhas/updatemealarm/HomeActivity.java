@@ -21,6 +21,13 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * The main activity of the application. It displays a clock, a list of alarms,
+ * and navigation tools to go to the addalarm activity and settings activity.
+ * 
+ * @author lenamalkhasian
+ * 
+ */
 public class HomeActivity extends Activity {
 
 	static public AlarmBrain alarmBrain;
@@ -50,7 +57,6 @@ public class HomeActivity extends Activity {
 		b2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(HomeActivity.this,
 						SettingsActivity.class);
 				startActivity(intent);
@@ -60,6 +66,9 @@ public class HomeActivity extends Activity {
 		setupList();
 	}
 
+	/**
+	 * sets up the alarm list that is displayed on the home page.
+	 */
 	void setupList() {
 		// populate the list view of alarms
 		ListView lv = (ListView) findViewById(R.id.alarmList);
@@ -68,20 +77,6 @@ public class HomeActivity extends Activity {
 				android.R.layout.simple_list_item_1, new String[] { "alarm" },
 				new int[] { android.R.id.text1 });
 		lv.setAdapter(simpleAdpt);
-
-		// add listener to list items
-		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parentAdapter, View view,
-					int position, long id) {
-				// We know the View is a TextView so we can cast it
-				TextView clickedView = (TextView) view;
-				Toast.makeText(
-						HomeActivity.this,
-						"Item with id [" + id + "] - Position [" + position
-								+ "] - Planet [" + clickedView.getText() + "]",
-						Toast.LENGTH_SHORT).show();
-			}
-		});
 
 		// add swipe listener to list items
 		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -94,7 +89,7 @@ public class HomeActivity extends Activity {
 				String time = clickedView.getText().toString();
 				String timeKey = time.replace(":", "");
 
-				//alarmBrain.removeAlarmFromManager(time);
+				// alarmBrain.removeAlarmFromManager(time);
 				Intent myIntent = new Intent(HomeActivity.this,
 						AlarmService.class);
 				AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -106,8 +101,8 @@ public class HomeActivity extends Activity {
 				// remove the alarm from list view and from brain and from
 				// persistent storage
 				alarmBrain.removeTime(time);
-				
-				//update homescreen
+
+				// update homescreen
 				initialPopulateList();
 				simpleAdpt.notifyDataSetChanged();
 
@@ -116,6 +111,9 @@ public class HomeActivity extends Activity {
 		});
 	}
 
+	/**
+	 * populate the list from scratch.
+	 */
 	void initialPopulateList() {
 		alarmList.clear();
 		Set<String> alarmBrainList = alarmBrain.getAlarmList();
@@ -124,20 +122,25 @@ public class HomeActivity extends Activity {
 		}
 	}
 
-	void updateAlarmList() {
-		String latestAlarm = alarmBrain.getLastAddedAlarm();
-		if (latestAlarm != null) {
-			alarmList.add(createAlarm("alarm", latestAlarm));
-			alarmBrain.clearLatest();
-		}
-	}
-
+	/**
+	 * creates a hashmap of the given key value pairing and returns it.
+	 * 
+	 * @param key
+	 *            from the key-value pair
+	 * @param value
+	 *            from the key-value pair
+	 * @return
+	 */
 	private HashMap<String, String> createAlarm(String key, String value) {
 		HashMap<String, String> alarm = new HashMap<String, String>();
 		alarm.put(key, value);
 		return alarm;
 	}
 
+	/**
+	 * The listener for the "Add Alarm" button. When clicked, it starts the
+	 * AddAlarmActivity.
+	 */
 	OnClickListener addAlarmButtonListener = new OnClickListener() {
 		@Override
 		public void onClick(View arg0) {
@@ -166,8 +169,7 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Toast.makeText(HomeActivity.this, "RESUMING!", Toast.LENGTH_SHORT)
-				.show();
+		//update the alarm list.
 		initialPopulateList();
 		simpleAdpt.notifyDataSetChanged();
 	}

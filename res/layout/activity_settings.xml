@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </TableRow>
-        
+
         <TableRow
             android:id="@+id/tableRow2"
             android:layout_width="wrap_content"
@@ -57,6 +57,106 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/tableRow2a"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:paddingLeft="10dip" >
+
+            <CheckBox
+                android:id="@+id/worldCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/worldLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="World"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2b"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:paddingLeft="10dip" >
+
+            <CheckBox
+                android:id="@+id/usCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/usLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall" 
+                android:text="U.S." />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:paddingLeft="10dip" >
+
+            <CheckBox
+                android:id="@+id/politicsCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/politicsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall" 
+                android:text="Politics" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:paddingLeft="10dip" >
+
+            <CheckBox
+                android:id="@+id/technologyCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/technologyLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall" 
+                android:text="Technology" />
+        </TableRow>
+        
+        <TableRow
+            android:id="@+id/tableRow2e"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:paddingLeft="10dip" >
+
+            <CheckBox
+                android:id="@+id/sportsCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/sportsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall" 
+                android:text="Sports" />
+        </TableRow>
+
+        <TableRow
             android:id="@+id/tableRow1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +166,7 @@
                 android:id="@+id/fbCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            
+
             <TextView
                 android:id="@+id/facebookLabel"
                 android:layout_width="wrap_content"

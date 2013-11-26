@@ -17,13 +17,18 @@ import com.facebook.model.GraphObject;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.speech.tts.TextToSpeech;
 
+/**
+ * AlarmActivity is what runs the ringing of the alarm. It gathers the required
+ * data (i.e. fb notifications, weather, and news) and then reads them.
+ * 
+ * @author lenamalkhasian
+ * 
+ */
 public class AlarmActivity extends Activity implements
 		TextToSpeech.OnInitListener {
 
@@ -38,7 +43,6 @@ public class AlarmActivity extends Activity implements
 	private boolean fbNotifSuccess = false;
 	private boolean newsSuccess = false;
 	private boolean weatherSuccess = false;
-
 	private boolean alreadyRead = false;
 
 	@Override
@@ -47,28 +51,27 @@ public class AlarmActivity extends Activity implements
 		setContentView(R.layout.activity_alarm);
 
 		mp = MediaPlayer.create(this, R.raw.lionking);
-		TTS = new TextToSpeech(this, this);
-		
-		if(HomeActivity.alarmBrain == null) {
-			HomeActivity.alarmBrain = new AlarmBrain();
-		}
-		HomeActivity.alarmBrain.removeTime();
-
 		mp.start();
 
-		//if facebook is set to on, get facebook notifications
+		TTS = new TextToSpeech(this, this);
+
+		// remove alarm from brain & persistent store
+		if (HomeActivity.alarmBrain == null)
+			HomeActivity.alarmBrain = new AlarmBrain();
+		HomeActivity.alarmBrain.shallowRemoveCurrentTime();
+
+		// if facebook is set to on, get facebook notifications
 		if (PersistenceManager.getSetting(PersistenceManager.FB_ALARM)) {
 			new Thread(new Runnable() {
 				public void run() {
 					checkSessionAndGetNotifications();
 				}
 			}).start();
-		}
-		else {
+		} else {
 			fbNotifSuccess = true;
 		}
 
-		//if news is on, get news to read aloud
+		// if news is on, get news to read aloud
 		if (PersistenceManager.getSetting(PersistenceManager.NEWS_ALARM)) {
 			new Thread(new Runnable() {
 				public void run() {
@@ -78,12 +81,11 @@ public class AlarmActivity extends Activity implements
 					readOutNotifications();
 				}
 			}).start();
-		}
-		else {
+		} else {
 			newsSuccess = true;
 		}
 
-		//if weather is on, get weather to read out loud
+		// if weather is on, get weather to read out loud
 		if (PersistenceManager.getSetting(PersistenceManager.WEATHER_ALARM)) {
 			new Thread(new Runnable() {
 				public void run() {
@@ -93,8 +95,7 @@ public class AlarmActivity extends Activity implements
 					readOutNotifications();
 				}
 			}).start();
-		}
-		else {
+		} else {
 			weatherSuccess = true;
 		}
 	}
@@ -102,11 +103,14 @@ public class AlarmActivity extends Activity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+
+		// shutdown text to speech so it does not leak
 		TTS.shutdown();
 	}
 
 	/**
-	 * 
+	 * If Facebook session is active, get notifications, else, start a new
+	 * notification, then get notifications.
 	 */
 	private void checkSessionAndGetNotifications() {
 		// make sure we have an active session
@@ -121,27 +125,28 @@ public class AlarmActivity extends Activity implements
 	}
 
 	/**
-	 * 
+	 * Start a new Facebook session. Once a new session has been created, The
+	 * callback starts to get Facebook notifications.
 	 */
 	private void startNewSession() {
 
-		System.out.println("Starting new session");
-
+		// get facebook notifications once the session becomes active.
 		Session.StatusCallback callback = new Session.StatusCallback() {
 			@Override
 			public void call(Session session, SessionState state,
 					Exception exception) {
-				// get facebook notifications once the session becomes active.
 				getFacebookNotifications(session);
 			}
 		};
 
+		// set active session and open it.
 		Session session = new Session(App.context);
 		Session.setActiveSession(session);
 		Session.openActiveSession(this, false, callback);
 	}
 
 	/**
+	 * Get user's Facebook notifications, and put them into "fbSummary" String.
 	 * 
 	 * @param fbSession
 	 *            the valid Facebook session used to get notifications
@@ -163,7 +168,7 @@ public class AlarmActivity extends Activity implements
 				"me/notifications", new Request.Callback() {
 
 					@Override
-					// this function is called once the request for the
+					// this is the callback for once the request for the
 					// notifications has been completed.
 					public void onCompleted(Response response) {
 
@@ -221,6 +226,7 @@ public class AlarmActivity extends Activity implements
 		Bundle params = new Bundle();
 		params.putString("include_read", "true");
 
+		// get the notifications
 		notificationsRequest.setParameters(params);
 		Request.executeBatchAsync(notificationsRequest);
 	}
@@ -242,6 +248,10 @@ public class AlarmActivity extends Activity implements
 		}
 	}
 
+	/**
+	 * This function stops the music playing and reads out the alarm if they
+	 * have not been already read and all the apis have been successfully called
+	 */
 	private void readOutNotifications() {
 		// if all the data has been gathered, and the alarm
 		// has not already gone off, ring the alarm.
@@ -253,11 +263,13 @@ public class AlarmActivity extends Activity implements
 		}
 	}
 
+	/**
+	 * Rings the user's specified alarm. I.e. speaks out the weather, news, and
+	 * Facebook notifications.
+	 */
 	private void ringTheAlarm() {
-
 		// create a salutation (good morning, evening, night etc.) based on time
 		String salutation = "Good ";
-
 		Calendar currTime = Calendar.getInstance();
 		currTime.setTime(new Date());
 		int curr_hour = currTime.get(Calendar.HOUR);

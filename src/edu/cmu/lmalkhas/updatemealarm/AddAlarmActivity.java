@@ -14,6 +14,13 @@ import android.widget.Button;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+/**
+ * AddAlarmActivityis the class that displays a timepicker and allows the user
+ * to set an alarm.
+ * 
+ * @author lenamalkhasian
+ * 
+ */
 public class AddAlarmActivity extends Activity {
 
 	private PendingIntent pendingIntent;
@@ -25,6 +32,10 @@ public class AddAlarmActivity extends Activity {
 		setButtonListeners();
 	}
 
+	/**
+	 * Add button listeners to the add and cancel buttons on the Add Alarm
+	 * Activity
+	 */
 	private void setButtonListeners() {
 
 		// add text to add new alarms button
@@ -44,6 +55,10 @@ public class AddAlarmActivity extends Activity {
 		}
 	};
 
+	/**
+	 * The add button listener adds the alarm for the time specified by the user
+	 * upon the user's click.
+	 */
 	OnClickListener addButtonListener = new OnClickListener() {
 		@Override
 		public void onClick(View arg0) {
@@ -51,6 +66,7 @@ public class AddAlarmActivity extends Activity {
 			// get time from the time picker
 			TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker1);
 			timePicker.clearFocus();
+
 			int alarm_hour = timePicker.getCurrentHour();
 			int alarm_min = timePicker.getCurrentMinute();
 			String hourString = Integer.toString(alarm_hour);
@@ -69,24 +85,15 @@ public class AddAlarmActivity extends Activity {
 			if (HomeActivity.alarmBrain.find(hourString + ":" + minuteString))
 				return;
 
-			// add alarm to alarm brain (this will also add to persistence manager)
+			// add alarm to alarm brain (this will also add to persistence
+			// manager)
 			HomeActivity.alarmBrain.addAlarm(hourString + ":" + minuteString);
 
 			// add alarm to system
 			Intent myIntent = new Intent(AddAlarmActivity.this,
 					AlarmService.class);
-			pendingIntent = PendingIntent.getService(AddAlarmActivity.this, Integer.valueOf(hourString+minuteString),
-					myIntent, 0);
-
-			/*
-			 * AlarmManager alarmManager = (AlarmManager)
-			 * getSystemService(ALARM_SERVICE); Calendar calendar =
-			 * Calendar.getInstance();
-			 * calendar.setTimeInMillis(System.currentTimeMillis());
-			 * calendar.add(Calendar.SECOND, 10);
-			 * alarmManager.set(AlarmManager.RTC_WAKEUP,
-			 * calendar.getTimeInMillis(), pendingIntent);
-			 */
+			pendingIntent = PendingIntent.getService(AddAlarmActivity.this,
+					Integer.valueOf(hourString + minuteString), myIntent, 0);
 			AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
 			// get current time
@@ -97,8 +104,6 @@ public class AddAlarmActivity extends Activity {
 			Calendar alarmTime = Calendar.getInstance();
 
 			// if alarm time has passed today set for tomorrow
-			// if (alarm_hour < curr_hour
-			// || (alarm_hour == curr_hour && alarm_min <= curr_min)) {
 			if (alarmCal.before(currTime)) {
 				// change time for alarm to go off TOMORROW
 				System.out
@@ -118,9 +123,6 @@ public class AddAlarmActivity extends Activity {
 			System.out.println("SET ALARM FOR ALARM TIME = "
 					+ alarmTime.get(Calendar.HOUR_OF_DAY) + " "
 					+ alarmTime.get(Calendar.MINUTE));
-
-			// add alarm to persistent storage
-			//PersistenceManager.addTime(hourString + ":" + minuteString);
 
 			finish();
 		}
