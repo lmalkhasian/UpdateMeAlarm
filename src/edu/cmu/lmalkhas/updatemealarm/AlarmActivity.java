@@ -17,11 +17,12 @@ import com.facebook.model.GraphObject;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.speech.tts.TextToSpeech;
-import android.util.Log;
 
 public class AlarmActivity extends Activity implements
 		TextToSpeech.OnInitListener {
@@ -32,53 +33,78 @@ public class AlarmActivity extends Activity implements
 	private String newsSummary = "";
 	private String weatherSummary = "";
 	private String name = "";
-	
+
 	private boolean ttsSuccess = false;
 	private boolean fbNotifSuccess = false;
 	private boolean newsSuccess = false;
 	private boolean weatherSuccess = false;
 
 	private boolean alreadyRead = false;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_alarm);
-		
-		mp = MediaPlayer.create(this, R.raw.alarm);
-		TTS = new TextToSpeech(this, this);
 
-		new Thread(new Runnable() {
-        	public void run() {
-        		checkSessionAndGetNotifications();
-        	}
-        }).start();
+		mp = MediaPlayer.create(this, R.raw.lionking);
+		TTS = new TextToSpeech(this, this);
 		
-		new Thread(new Runnable() {
-			public void run() {
-				NewsManager nm = new NewsManager();
-				newsSummary = nm.getNewsSummary();
-				newsSuccess = true;
-				readOutNotifications();
-			}
-		}).start();
-		
-		new Thread(new Runnable() {
-			public void run() {
-				WeatherManager wm = new WeatherManager();
-				weatherSummary = wm.getWeatherSummary();
-				weatherSuccess = true;
-				readOutNotifications();
-			}
-		}).start();
+		if(HomeActivity.alarmBrain == null) {
+			HomeActivity.alarmBrain = new AlarmBrain();
+		}
+		HomeActivity.alarmBrain.removeTime();
+
+		mp.start();
+
+		//if facebook is set to on, get facebook notifications
+		if (PersistenceManager.getSetting(PersistenceManager.FB_ALARM)) {
+			new Thread(new Runnable() {
+				public void run() {
+					checkSessionAndGetNotifications();
+				}
+			}).start();
+		}
+		else {
+			fbNotifSuccess = true;
+		}
+
+		//if news is on, get news to read aloud
+		if (PersistenceManager.getSetting(PersistenceManager.NEWS_ALARM)) {
+			new Thread(new Runnable() {
+				public void run() {
+					NewsManager nm = new NewsManager();
+					newsSummary = nm.getNewsSummary();
+					newsSuccess = true;
+					readOutNotifications();
+				}
+			}).start();
+		}
+		else {
+			newsSuccess = true;
+		}
+
+		//if weather is on, get weather to read out loud
+		if (PersistenceManager.getSetting(PersistenceManager.WEATHER_ALARM)) {
+			new Thread(new Runnable() {
+				public void run() {
+					WeatherManager wm = new WeatherManager();
+					weatherSummary = wm.getWeatherSummary();
+					weatherSuccess = true;
+					readOutNotifications();
+				}
+			}).start();
+		}
+		else {
+			weatherSuccess = true;
+		}
 	}
+
 	@Override
-	protected void onDestroy() 
-	{
+	protected void onDestroy() {
 		super.onDestroy();
 		TTS.shutdown();
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -93,24 +119,23 @@ public class AlarmActivity extends Activity implements
 			getFacebookNotifications(session);
 		}
 	}
-	
-	
+
 	/**
 	 * 
 	 */
 	private void startNewSession() {
-		
+
 		System.out.println("Starting new session");
 
 		Session.StatusCallback callback = new Session.StatusCallback() {
 			@Override
 			public void call(Session session, SessionState state,
 					Exception exception) {
-				//get facebook notifications once the session becomes active.
+				// get facebook notifications once the session becomes active.
 				getFacebookNotifications(session);
 			}
-	    };
-	    
+		};
+
 		Session session = new Session(App.context);
 		Session.setActiveSession(session);
 		Session.openActiveSession(this, false, callback);
@@ -118,10 +143,10 @@ public class AlarmActivity extends Activity implements
 
 	/**
 	 * 
-	 * @param fbSession the valid Facebook session used to get notifications
+	 * @param fbSession
+	 *            the valid Facebook session used to get notifications
 	 */
 	void getFacebookNotifications(Session fbSession) {
-		
 
 		if (fbSession == null) {
 			System.out.println("FBSESSION = NULL in do stuff!!!");
@@ -129,8 +154,8 @@ public class AlarmActivity extends Activity implements
 		if (fbSession.isClosed()) {
 			System.out.println("FBSESSION IS CLOSED in do stuff");
 		}
-		
-		//assert the session is valid just in case something went wrong
+
+		// assert the session is valid just in case something went wrong
 		assert fbSession != null;
 		assert fbSession.isOpened();
 
@@ -138,8 +163,8 @@ public class AlarmActivity extends Activity implements
 				"me/notifications", new Request.Callback() {
 
 					@Override
-					//this function is called once the request for the
-					//notifications has been completed.
+					// this function is called once the request for the
+					// notifications has been completed.
 					public void onCompleted(Response response) {
 
 						System.out.println("Notification response completed");
@@ -149,54 +174,44 @@ public class AlarmActivity extends Activity implements
 							System.out.println("OBJECT = NULL!!!");
 							return;
 						}
-						
+
 						JSONObject jsonObj = object.getInnerJSONObject();
 
 						int num_unread = 0;
-						//int num_read = 0;
 						String unread_notifs = "";
-						//String read_notifs = "";
 
 						try {
 							JSONArray jsonArray = jsonObj.getJSONArray("data");
 
 							for (int i = 0; i < jsonArray.length(); i++) {
 								JSONObject obj = jsonArray.getJSONObject(i);
-								
-								//get user's name from the first fb notification.
-								if(i == 0) {
-									name = obj.getJSONObject("to").getString("name");
+
+								// get user's name from the first fb
+								// notification.
+								if (i == 0) {
+									name = obj.getJSONObject("to").getString(
+											"name");
 								}
-								
-								//only register unread notifications.
+
+								// only register unread notifications.
 								if (obj.getInt("unread") == 1) {
 									num_unread++;
 									unread_notifs += obj.getString("title")
 											+ " ";
 								}
-//								else {
-//									if(num_read >= 5) break;
-//									num_read++;
-//									read_notifs += obj.getString("title") + " ";
-//								}
 							}
 
 						} catch (JSONException e1) {
 							e1.printStackTrace();
 						}
 
-						//setup message to be read aloud
+						// setup message to be read aloud
 						fbSummary = "You have " + num_unread
 								+ " unread notifications.";
 						if (num_unread > 0) {
 							fbSummary += "Here are your unread notifications. "
 									+ unread_notifs;
 						}
-//						if (num_read > 0) {
-//							message += " Here are your older notifications. "
-//									+ read_notifs;
-//						}
-						//System.out.println(message);
 						fbNotifSuccess = true;
 						readOutNotifications();
 					}
@@ -218,7 +233,6 @@ public class AlarmActivity extends Activity implements
 			TTS.setLanguage(Locale.UK);
 			TTS.setSpeechRate((float) 0.8);
 			ttsSuccess = true;
-			
 			readOutNotifications();
 		} else {
 			Intent installTTSIntent = new Intent();
@@ -227,39 +241,44 @@ public class AlarmActivity extends Activity implements
 			startActivity(installTTSIntent);
 		}
 	}
-	
-	private void readOutNotifications() {
-		System.out.println("in read it!!");
-		if(!alreadyRead && ttsSuccess && fbNotifSuccess && newsSuccess) {
-			alreadyRead = true;
-			System.out.println("Success!");
-			popUpAlert();
-		}
-	}	
-	
-	private void popUpAlert() {
-		
-		//do i need 2 threads here?
 
-		//add a salutation (good morning, evening, night etc.) based on time
+	private void readOutNotifications() {
+		// if all the data has been gathered, and the alarm
+		// has not already gone off, ring the alarm.
+		if (!alreadyRead && ttsSuccess && fbNotifSuccess && newsSuccess
+				&& weatherSuccess) {
+			alreadyRead = true;
+			mp.stop();
+			ringTheAlarm();
+		}
+	}
+
+	private void ringTheAlarm() {
+
+		// create a salutation (good morning, evening, night etc.) based on time
 		String salutation = "Good ";
-		
+
 		Calendar currTime = Calendar.getInstance();
 		currTime.setTime(new Date());
 		int curr_hour = currTime.get(Calendar.HOUR);
-		if(curr_hour < 12) salutation += "morning";
-		else if (curr_hour < 18) salutation += "afternoon";
-		else if (curr_hour < 21) salutation += "evening";
-		else salutation += "night";
-		
-		//add user's name
+		if (curr_hour < 12)
+			salutation += "morning";
+		else if (curr_hour < 18)
+			salutation += "afternoon";
+		else if (curr_hour < 21)
+			salutation += "evening";
+		else
+			salutation += "night";
+
+		// add user's name & cute message
 		salutation += name;
-		
 		salutation += "! Rise and Shine!";
-			
-		
-		TTS.speak(salutation + weatherSummary + newsSummary + " " + fbSummary, TextToSpeech.QUEUE_FLUSH, null);
-		
+
+		// speak the summary!
+		TTS.speak(salutation + weatherSummary + newsSummary + " " + fbSummary,
+				TextToSpeech.QUEUE_FLUSH, null);
+
+		// create the dialog box that will stop the alarm.
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 				AlarmActivity.this);
 
@@ -268,24 +287,21 @@ public class AlarmActivity extends Activity implements
 
 		// set dialog message
 		alertDialogBuilder
-				.setMessage(
-						"Turn off alarm")
+				.setMessage("Turn off alarm")
 				.setCancelable(false)
 				.setPositiveButton("Yes, Please",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								// if this button is clicked, rm
-								// Facebook notifications
-								// TODO: REMOVE
-								//TTS.stop();
+								TTS.stop();
+								TTS.shutdown();
 								finish();
 							}
 						});
-		
+
 		// create alert dialog
 		alertDialogBuilder.create();
 
-		//show the dialog
+		// show the dialog
 		alertDialogBuilder.show();
 	}
 

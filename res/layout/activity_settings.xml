@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -12,32 +11,14 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" 
-         android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
         <TextView
             android:id="@+id/alarmSoundTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dip" >
-
-            <TextView
-                android:id="@+id/facebookLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <CheckBox
-                android:id="@+id/facebookCheckBox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </TableRow>
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TableRow
             android:id="@+id/tableRow3"
@@ -45,38 +26,67 @@
             android:layout_height="wrap_content"
             android:padding="5dip" >
 
-            <com.facebook.widget.LoginButton
-                android:id="@+id/loginButton"
+            <CheckBox
+                android:id="@+id/weatherCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/weatherLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                facebook:confirm_logout="false"
-                facebook:fetch_user_info="true" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
         </TableRow>
-
+        
         <TableRow
             android:id="@+id/tableRow2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dip" >
 
+            <CheckBox
+                android:id="@+id/newsCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
             <TextView
                 android:id="@+id/newsLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dip" >
 
             <CheckBox
-                android:id="@+id/newsCheckBox"
+                android:id="@+id/fbCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+            
+            <TextView
+                android:id="@+id/facebookLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
         </TableRow>
+
+        <com.facebook.widget.LoginButton
+            android:id="@+id/loginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            facebook:confirm_logout="false"
+            facebook:fetch_user_info="true" />
     </LinearLayout>
 
     <Button
         android:id="@+id/saveButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.view.Menu;
 import android.widget.AdapterView;
@@ -25,17 +27,13 @@ public class HomeActivity extends Activity {
 	List<Map<String, String>> alarmList = new ArrayList<Map<String, String>>();
 	private SimpleAdapter simpleAdpt;
 
-	// constants
-	public static final String PREFS_NAME = "AlarmTimes";
-	//private static final String ALARM_SET_KEY = "alarmStringsKey";
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 
 		// instantiate alarmBrain, persistence manager
-		alarmBrain = new AlarmBrain(getApplicationContext());
+		alarmBrain = new AlarmBrain();
 
 		// add title for alarms
 		TextView tv = (TextView) findViewById(R.id.alarmsTitle);
@@ -46,32 +44,20 @@ public class HomeActivity extends Activity {
 		b.setText("Add new alarm");
 		b.setOnClickListener(addAlarmButtonListener);
 
+		// add intent to settings button
 		Button b2 = (Button) findViewById(R.id.settingsButton);
 		b2.setText("Settings");
 		b2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+				Intent intent = new Intent(HomeActivity.this,
+						SettingsActivity.class);
 				startActivity(intent);
 			}
-			
-		});
-		
-		Button b3 = (Button) findViewById(R.id.newsButton);
-		b3.setText("News");
-		b3.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(HomeActivity.this, News2Activity.class);
-				startActivity(intent);
-			}
-			
-		});
-		
-		setupList();
 
+		});
+		setupList();
 	}
 
 	void setupList() {
@@ -101,14 +87,37 @@ public class HomeActivity extends Activity {
 		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> parentAdapter,
 					View view, int position, long id) {
+
 				Toast.makeText(HomeActivity.this, "list item long clicked",
 						Toast.LENGTH_SHORT).show();
+				TextView clickedView = (TextView) view;
+				String time = clickedView.getText().toString();
+				String timeKey = time.replace(":", "");
+
+				//alarmBrain.removeAlarmFromManager(time);
+				Intent myIntent = new Intent(HomeActivity.this,
+						AlarmService.class);
+				AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+				PendingIntent displayIntent = PendingIntent.getService(
+						getApplicationContext(), Integer.valueOf(timeKey),
+						myIntent, 0);
+				alarmManager.cancel(displayIntent);
+
+				// remove the alarm from list view and from brain and from
+				// persistent storage
+				alarmBrain.removeTime(time);
+				
+				//update homescreen
+				initialPopulateList();
+				simpleAdpt.notifyDataSetChanged();
+
 				return true;
 			}
 		});
 	}
 
 	void initialPopulateList() {
+		alarmList.clear();
 		Set<String> alarmBrainList = alarmBrain.getAlarmList();
 		for (String time : alarmBrainList) {
 			alarmList.add(createAlarm("alarm", time));
@@ -159,7 +168,7 @@ public class HomeActivity extends Activity {
 		super.onResume();
 		Toast.makeText(HomeActivity.this, "RESUMING!", Toast.LENGTH_SHORT)
 				.show();
-		updateAlarmList();
+		initialPopulateList();
 		simpleAdpt.notifyDataSetChanged();
 	}
 

@@ -1,55 +1,22 @@
 package edu.cmu.lmalkhas.updatemealarm;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class WeatherManager {
+public class WeatherManager extends Manager{
 
 	final String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 	String URL = "http://api.wunderground.com/api/04fbf19ce6e52ebe/forecast/astronomy/q/autoip.json";
 	
-	WeatherManager() {
-		// TODO: add preferences here.
-
-	}
-
 	public String getWeatherSummary() {
-		return callWebServiceAndProcess();
+		return callWebService(URL);
 	}
 
-	private String callWebServiceAndProcess() {
-
-		String result = "";
-		HttpClient httpclient = new DefaultHttpClient();
-		HttpGet request = new HttpGet(URL);
-		ResponseHandler<String> handler = new BasicResponseHandler();
-		try {
-			String response = httpclient.execute(request, handler);
-			result = processResponse(response);
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		httpclient.getConnectionManager().shutdown();
-		return result;
-	}
-
-	// end callWebService()
-
-	private String processResponse(String response) {
+	protected String processResponse(String response) {
 		try {
 			JSONObject jsonObj = new JSONObject(response);
 			
